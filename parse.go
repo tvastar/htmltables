@@ -5,16 +5,16 @@
 package htmltables
 
 import (
-	"golang.org/x/net/html"	
-	"golang.org/x/net/html/atom"	
-	"strings"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 	"strconv"
+	"strings"
 )
 
 // Table holds a simple table of headers and rows.
 type Table struct {
 	Headers []string
-	Rows [][]string
+	Rows    [][]string
 }
 
 // Parse parses a html fragment or whole document looking for HTML
@@ -35,17 +35,17 @@ func Parse(s string) ([]*Table, error) {
 func innerHTML(n *html.Node) string {
 	clone := html.Node{
 		FirstChild: n.FirstChild,
-		LastChild: n.LastChild,
-		Type: html.ElementNode,
-		DataAtom: atom.Body,
-		Data: "body",
+		LastChild:  n.LastChild,
+		Type:       html.ElementNode,
+		DataAtom:   atom.Body,
+		Data:       "body",
 	}
 	writer := &strings.Builder{}
 	if err := html.Render(writer, &clone); err != nil {
 		return err.Error()
 	}
 	s := writer.String()
-	s = s[strings.Index(s, "<body>") + 6:]
+	s = s[strings.Index(s, "<body>")+6:]
 	s = s[:strings.Index(s, "</body>")]
 	return s
 }
@@ -64,7 +64,7 @@ func parse(n *html.Node, tables *[]*Table) {
 		t.Rows = append(t.Rows, []string{})
 	case atom.Td:
 		t := (*tables)[len(*tables)-1]
-		l := len(t.Rows)-1
+		l := len(t.Rows) - 1
 		t.Rows[l] = append(t.Rows[l], innerHTML(n))
 		return
 	}
@@ -92,4 +92,3 @@ func addMissingColumns(t *Table) *Table {
 	}
 	return t
 }
-

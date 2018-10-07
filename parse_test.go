@@ -13,25 +13,25 @@ import (
 type Table = htmltables.Table
 
 func TestParse(t *testing.T) {
-	cases := map[string][]*Table {
-		"": []*Table{},
-		"goop": []*Table{},
-		"<table/>": []*Table{&Table{}},
-		"<table><td>Hello</td>": []*Table{&Table{
+	cases := map[string][]*Table{
+		"":         {},
+		"goop":     {},
+		"<table/>": {{}},
+		"<table><td>Hello</td>": {{
 			Headers: []string{"Col 1"},
-			Rows: [][]string{{"Hello"}},
+			Rows:    [][]string{{"Hello"}},
 		}},
-		"<table><th>boo</th><td>Hello</td>": []*Table{&Table{
+		"<table><th>boo</th><td>Hello</td>": {{
 			Headers: []string{"boo"},
-			Rows: [][]string{{"Hello"}},
+			Rows:    [][]string{{"Hello"}},
 		}},
-		"<table><thead><th>boo</th></thead><tr/><td>Hello</td>": []*Table{&Table{
+		"<table><thead><th>boo</th></thead><tr/><td>Hello</td>": {{
 			Headers: []string{"boo"},
-			Rows: [][]string{{""}, {"Hello"}},
+			Rows:    [][]string{{""}, {"Hello"}},
 		}},
-		"<table><thead><td><a href=\"x\">Hello</a></td>": []*Table{&Table{
+		"<table><thead><td><a href=\"x\">Hello</a></td>": {{
 			Headers: []string{"Col 1"},
-			Rows: [][]string{{"<a href=\"x\">Hello</a>"}},
+			Rows:    [][]string{{"<a href=\"x\">Hello</a>"}},
 		}},
 	}
 
