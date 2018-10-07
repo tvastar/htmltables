@@ -67,7 +67,11 @@ func parse(n *html.Node, tables *[]*Table) {
 
 func addMissingColumns(t *Table) *Table {
 	cols := len(t.Headers)
+	rows := make([][]string, 0, len(t.Rows))
 	for _, row := range t.Rows {
+		if len(row) > 0 {
+			rows = append(rows, row)
+		}
 		if len(row) > cols {
 			cols = len(row)
 		}
@@ -76,11 +80,11 @@ func addMissingColumns(t *Table) *Table {
 		name := "Col " + strconv.Itoa(len(t.Headers)+1)
 		t.Headers = append(t.Headers, name)
 	}
-	for kk, row := range t.Rows {
-		for len(row) < cols {
-			row = append(row, "")
-			t.Rows[kk] = row
+	for kk := range rows {
+		for len(rows[kk]) < cols {
+			rows[kk] = append(rows[kk], "")
 		}
 	}
+	t.Rows = rows
 	return t
 }
