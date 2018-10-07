@@ -16,7 +16,7 @@ func TestParse(t *testing.T) {
 	cases := map[string][]*Table{
 		"":         {},
 		"goop":     {},
-		"<table/>": {{}},
+		"<table/>": {{Headers: []string(nil), Rows: [][]string{}}},
 		"<table><td>Hello</td>": {{
 			Headers: []string{"Col 1"},
 			Rows:    [][]string{{"Hello"}},
@@ -25,9 +25,13 @@ func TestParse(t *testing.T) {
 			Headers: []string{"boo"},
 			Rows:    [][]string{{"Hello"}},
 		}},
+		"<table><tr><td>1</td><td>2</td></tr><td>3": {{
+			Headers: []string{"Col 1", "Col 2"},
+			Rows:    [][]string{{"1", "2"}, {"3", ""}},
+		}},
 		"<table><thead><th>boo</th></thead><tr/><td>Hello</td>": {{
 			Headers: []string{"boo"},
-			Rows:    [][]string{{""}, {"Hello"}},
+			Rows:    [][]string{{"Hello"}},
 		}},
 		"<table><thead><td><a href=\"x\">Hello</a></td>": {{
 			Headers: []string{"Col 1"},
