@@ -18,7 +18,7 @@ type Table struct {
 }
 
 // Parse parses a html fragment or whole document looking for HTML
-// tables.
+// tables. It converts all cells into text, stripping away any HTML content.
 func Parse(s string) ([]*Table, error) {
 	node, err := html.Parse(strings.NewReader(s))
 	if err != nil {
@@ -32,40 +32,32 @@ func Parse(s string) ([]*Table, error) {
 	return tables, nil
 }
 
-func innerHTML(n *html.Node) string {
-	clone := html.Node{
-		FirstChild: n.FirstChild,
-		LastChild:  n.LastChild,
-		Type:       html.ElementNode,
-		DataAtom:   atom.Body,
-		Data:       "body",
+func innerText(n *html.Node) string {
+	if n.Type == html.TextNode {
+		return n.Data
 	}
-	writer := &strings.Builder{}
-	if err := html.Render(writer, &clone); err != nil {
-		return err.Error()
+	result := ""
+	for x := n.FirstChild; x != nil; x = x.NextSibling {
+		result += innerText(x)
 	}
-	s := writer.String()
-	s = s[strings.Index(s, "<body>")+6:]
-	s = s[:strings.Index(s, "</body>")]
-	return s
+	return result
 }
 
 func parse(n *html.Node, tables *[]*Table) {
+	strip := strings.TrimSpace
 	switch n.DataAtom {
 	case atom.Table:
-		if len(*tables) == 0 {
-			*tables = append(*tables, &Table{})
-		}
+		*tables = append(*tables, &Table{})
 	case atom.Th:
 		t := (*tables)[len(*tables)-1]
-		t.Headers = append(t.Headers, innerHTML(n))
+		t.Headers = append(t.Headers, strip(innerText(n)))
 	case atom.Tr:
 		t := (*tables)[len(*tables)-1]
 		t.Rows = append(t.Rows, []string{})
 	case atom.Td:
 		t := (*tables)[len(*tables)-1]
 		l := len(t.Rows) - 1
-		t.Rows[l] = append(t.Rows[l], innerHTML(n))
+		t.Rows[l] = append(t.Rows[l], strip(innerText(n)))
 		return
 	}
 	for child := n.FirstChild; child != nil; child = child.NextSibling {

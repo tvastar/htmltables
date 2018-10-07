@@ -31,8 +31,18 @@ func TestParse(t *testing.T) {
 		}},
 		"<table><thead><td><a href=\"x\">Hello</a></td>": {{
 			Headers: []string{"Col 1"},
-			Rows:    [][]string{{"<a href=\"x\">Hello</a>"}},
+			Rows:    [][]string{{"Hello"}},
 		}},
+		"<table><thead/><td>Hello</td></th></table><table><thead/><td>Hello2</td></th>": {
+			{
+				Headers: []string{"Col 1"},
+				Rows:    [][]string{{"Hello"}},
+			},
+			{
+				Headers: []string{"Col 1"},
+				Rows:    [][]string{{"Hello2"}},
+			},
+		},
 	}
 
 	for caseName, expected := range cases {
