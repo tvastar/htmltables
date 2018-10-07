@@ -13,8 +13,9 @@ import (
 
 // Table holds a simple table of headers and rows.
 type Table struct {
-	Headers []string
-	Rows    [][]string
+	Attributes map[string]string
+	Headers    []string
+	Rows       [][]string
 }
 
 // Parse parses a html fragment or whole document looking for HTML
@@ -47,7 +48,14 @@ func parse(n *html.Node, tables *[]*Table) {
 	strip := strings.TrimSpace
 	switch n.DataAtom {
 	case atom.Table:
-		*tables = append(*tables, &Table{})
+		t := &Table{}
+		for _, at := range n.Attr {
+			if t.Attributes == nil {
+				t.Attributes = map[string]string{}
+			}
+			t.Attributes[at.Key] = at.Val
+		}
+		*tables = append(*tables, t)
 	case atom.Th:
 		t := (*tables)[len(*tables)-1]
 		t.Headers = append(t.Headers, strip(innerText(n)))

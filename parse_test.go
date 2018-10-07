@@ -47,6 +47,11 @@ func TestParse(t *testing.T) {
 				Rows:    [][]string{{"Hello2"}},
 			},
 		},
+		"<table x=\"y\" z=\"b\"><td>boo": {{
+			Attributes: map[string]string{"x": "y", "z": "b"},
+			Headers:    []string{"Col 1"},
+			Rows:       [][]string{{"boo"}},
+		}},
 	}
 
 	for caseName, expected := range cases {
